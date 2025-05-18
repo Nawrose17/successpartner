@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Account</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: linear-gradient(#5d9fff, #b8dcff);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100vh;
+      justify-content: center;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      margin: 0;
+    }
+
+    .header img {
+      margin-top: 10px;
+      width: 100px;
+      height: auto;
+    }
+
+    .container {
+      background: white;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      width: 350px;
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #registerForm {
+      display: none;
+    }
+
+    .toggle-link {
+      margin-top: 10px;
+      text-align: center;
+      color: #007BFF;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>Welcome to SuccessPartner</h1>
+    <img src="https://seeklogo.com/images/N/north-south-university-logo-0CA3A4611D-seeklogo.com.png" alt="NSU Logo">
+  </div>
+
+  <div class="container">
+    <h2 id="formTitle">Login</h2>
+    
+    <form id="loginForm">
+      <input type="email" id="loginEmail" placeholder="Email" required />
+      <input type="password" id="loginPassword" placeholder="Password" required />
+      <button type="submit">Login</button>
+      <div class="toggle-link" onclick="toggleForm()">Don't have an account? Register</div>
+    </form>
+    
+    <form id="registerForm">
+      <input type="email" id="regEmail" placeholder="Gmail Address" required />
+      <input type="text" id="nsuId" placeholder="NSU 7-digit ID" required />
+      <input type="text" id="fullName" placeholder="Full Name" required />
+      <input type="text" id="department" placeholder="Department" required />
+      <input type="password" id="regPassword" placeholder="Create Password" required />
+      <button type="submit">Register</button>
+      <div class="toggle-link" onclick="toggleForm()">Already have an account? Login</div>
+    </form>
+  </div>
+
+  <!-- Firebase App SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBHdnhg5fk1KGN36Ssf8z5NwVGI42iOxmI",
+      authDomain: "nsuhelp-5693c.firebaseapp.com",
+      projectId: "nsuhelp-5693c",
+      storageBucket: "nsuhelp-5693c.firebasestorage.app",
+      messagingSenderId: "606499109941",
+      appId: "1:606499109941:web:533dbed32c2ff504a3857c"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    function toggleForm() {
+      const loginForm = document.getElementById("loginForm");
+      const registerForm = document.getElementById("registerForm");
+      const formTitle = document.getElementById("formTitle");
+
+      if (loginForm.style.display === "none") {
+        loginForm.style.display = "block";
+        registerForm.style.display = "none";
+        formTitle.textContent = "Login";
+      } else {
+        loginForm.style.display = "none";
+        registerForm.style.display = "block";
+        formTitle.textContent = "Register";
+      }
+    }
+
+    document.getElementById("registerForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const email = document.getElementById("regEmail").value;
+      const password = document.getElementById("regPassword").value;
+      const nsuId = document.getElementById("nsuId").value;
+      const fullName = document.getElementById("fullName").value;
+      const department = document.getElementById("department").value;
+
+      auth.createUserWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          return db.collection("users").doc(user.uid).set({
+            email: email,
+            nsuId: nsuId,
+            name: fullName,
+            department: department
+          });
+        })
+        .then(() => {
+          alert("Registration successful!");
+          toggleForm();
+        })
+        .catch((error) => {
+          alert(error.message);
+        });
+    });
+
+    document.getElementById("loginForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const email = document.getElementById("loginEmail").value;
+      const password = document.getElementById("loginPassword").value;
+
+      auth.signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          alert("Login successful!");
+          // ✅ Redirect after login
+          window.location.href = "help.html";
+        })
+        .catch((error) => {
+          alert("Login failed: " + error.message);
+        });
+    });
+  </script>
+</body>
+</html>
