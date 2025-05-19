@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quick Access</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-image: url('https://img.freepik.com/free-photo/vivid-blurred-colorful-background_58702-2554.jpg?semt=ais_hybrid&w=740');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    h1 {
+      color: white;
+      font-size: 3rem;
+      margin-bottom: 40px;
+      text-shadow: 2px 2px 4px #000;
+    }
+
+    .button-container {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 90%;
+    }
+
+    .option-button {
+      min-width: 180px;
+      padding: 12px 20px;
+      background: linear-gradient(to bottom right, #f00, #0f0); /* red to green */
+      border: none;
+      border-radius: 25px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .option-button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+    }
+
+    @media screen and (max-width: 400px) {
+      .option-button {
+        min-width: 140px;
+        font-size: 0.9rem;
+        padding: 10px 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Quick Access</h1>
+  <div class="button-container">
+    <a href="https://rds3.northsouth.edu/" class="option-button" target="_blank">RDS3 NSU</a>
+    <a href="https://shadhin-f.github.io/rds2-but-from-future/" class="option-button" target="_blank">Offered Course List</a>
+    <a href="cgpa store.html" class="option-button" target="_blank">Make Grade Analysis</a>
+    <a href="https://sajidhshanta.github.io/CGPACalculator/" class="option-button" target="_blank">CGPA Calculator</a>
+    <a href="help.html" class="option-button" target="_blank">Course Help</a>
+    <a href="https://nsuer.club/login" class="option-button" target="_blank">Join NSUer.CLUB</a>
+  </div>
+</body>
+</html>
