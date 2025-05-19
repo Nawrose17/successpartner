@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Grades History</title>
   <style>
-    /* [Your existing CSS remains unchanged] */
     body {
       font-family: Arial, sans-serif;
       background-image: url('https://netaworldjournal.org/wp-content/uploads/2021/11/naranjo.jpg');
@@ -132,38 +131,33 @@
   <div class="total-cgpa" id="cgpa-result">Total CGPA: 0.00</div>
 </div>
 
-<!-- Firebase SDK and Firestore -->
-
-
-<!-- (Same Head and CSS as before) -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-app.js";
-  import { getFirestore, collection, addDoc, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.7.3/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyArB_hJeAhmbnnK2Rt4jMh7kZNd95oSx3I",
-    authDomain: "nsu-grade-his.firebaseapp.com",
-    databaseURL: "https://nsu-grade-his-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "nsu-grade-his",
-    storageBucket: "nsu-grade-his.firebasestorage.app",
-    messagingSenderId: "193145000154",
-    appId: "1:193145000154:web:95e2fa4c785bbad26195e3"
-  };
+    const firebaseConfig = {
+    apiKey: "AIzaSyDJeWr7PtQzOrHz0_0JVbg5EzdPtIHC7qs",
+    authDomain: "grade-1a4cd.firebaseapp.com",
+    projectId: "grade-1a4cd",
+    storageBucket: "grade-1a4cd.firebasestorage.app",
+    messagingSenderId: "688248551040",
+    appId: "1:688248551040:web:f8e5476d6bafee0e525865"
+  };  
+
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  // Load Data from Firestore
+  // Load previous data from Firestore
   async function loadData() {
     const tbody = document.getElementById("grades-body");
-    tbody.innerHTML = ""; // clear previous
+    tbody.innerHTML = "";
     const q = query(collection(db, "grades"), orderBy("timestamp"));
     const snapshot = await getDocs(q);
 
     snapshot.forEach(doc => {
       const data = doc.data();
       const row = document.createElement("tr");
-
       row.innerHTML = `
         <td><input type="text" value="${data.courseName}" placeholder="Course Name"></td>
         <td>
@@ -194,15 +188,12 @@
       tbody.appendChild(row);
     });
 
-    // Trigger CGPA calculation
-    document.dispatchEvent(new Event("change"));
+    calculateCGPA();
   }
 
-  // Add new row manually
   window.addRow = function () {
     const tbody = document.getElementById("grades-body");
     const row = document.createElement("tr");
-
     row.innerHTML = `
       <td><input type="text" placeholder="Course Name"></td>
       <td>
@@ -233,8 +224,30 @@
     tbody.appendChild(row);
   };
 
-  // CGPA calculation
-  document.addEventListener('change', () => {
+  // Save all entries to Firestore
+  window.saveToDatabase = async function () {
+    const rows = document.querySelectorAll("#grades-body tr");
+
+    for (const row of rows) {
+      const courseName = row.cells[0].querySelector("input").value;
+      const credits = parseFloat(row.cells[1].querySelector("select").value);
+      const grade = parseFloat(row.cells[2].querySelector("select").value);
+
+      if (courseName && !isNaN(credits) && !isNaN(grade)) {
+        await addDoc(collection(db, "grades"), {
+          courseName,
+          credits,
+          grade,
+          timestamp: serverTimestamp()
+        });
+      }
+    }
+
+    alert("✅ Data saved successfully!");
+    loadData();
+  };
+
+  function calculateCGPA() {
     const rows = document.querySelectorAll("#grades-body tr");
     let totalCredits = 0;
     let totalPoints = 0;
@@ -251,40 +264,11 @@
 
     const cgpa = totalCredits > 0 ? (totalPoints / totalCredits).toFixed(2) : "0.00";
     document.getElementById("cgpa-result").textContent = `Total CGPA: ${cgpa}`;
-  });
+  }
 
-  // Save to Firestore
-  window.saveToDatabase = async function () {
-    const rows = document.querySelectorAll("#grades-body tr");
-
-    for (const row of rows) {
-      const courseName = row.cells[0].querySelector("input").value.trim();
-      const credits = parseFloat(row.cells[1].querySelector("select").value);
-      const grade = parseFloat(row.cells[2].querySelector("select").value);
-
-      if (!courseName || isNaN(credits) || isNaN(grade)) continue;
-
-      try {
-        await addDoc(collection(db, "grades"), {
-          courseName,
-          credits,
-          grade,
-          timestamp: new Date()
-        });
-        console.log(`Saved: ${courseName}`);
-      } catch (error) {
-        console.error("Error saving document:", error);
-      }
-    }
-
-    alert("All data saved to Firebase!");
-  };
-
-  // Load data on page load
-  window.addEventListener("DOMContentLoaded", loadData);
+  document.addEventListener("change", calculateCGPA);
+  loadData();
 </script>
-
-
 
 </body>
 </html>
