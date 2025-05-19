@@ -175,9 +175,9 @@
 
       auth.signInWithEmailAndPassword(email, password)
         .then((userCredential) => {
-          alert("Login successful!");
+          
           // ✅ Redirect after login
-          window.location.href = "help.html";
+          window.location.href = "options.html";
         })
         .catch((error) => {
           alert("Login failed: " + error.message);
